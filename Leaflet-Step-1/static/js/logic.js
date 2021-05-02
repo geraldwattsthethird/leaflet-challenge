@@ -6,18 +6,19 @@ var myMap = L.map("map", {
 
 /* Use the Leaflet street map as the background for analysis */
 var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     maxZoom: 12,
+    zoomOffset: 0,
     id: "mapbox/streets-v11",
     accessToken: API_KEY
 }).addTo(myMap);
 
 var URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 
-d3.json(URL, function (data) {
+d3.json(URL).then(function(data) {
     let earthquakes = data.features;
-       console.log(earthquakes);
-    /*Set up color scheme for the earthquakes */
+    //    console.log(earthquakes);
+    
     let color = {
         level1: "#3c0",
         level2: "#9f6",
@@ -57,17 +58,16 @@ d3.json(URL, function (data) {
         epicenter.bindPopup("<h3> " + new Date(earthquakes[i].properties.time) + "</h3><h4>Magnitude: " + magnitude +
             "<br>Location: " + earthquakes[i].properties.place + "</h4><br>");
 
-    var legend = L.control({
-    position: 'bottomright'
+    var legend = L.control( {
+        position: 'bottomright'
     });
-        
-    /* Adding on the legend based off the color scheme we have */
+    
     legend.onAdd = function (color) {
         var div = L.DomUtil.create('div', 'info legend');
         var levels = ['>1', '1-2', '2-3', '3-4', '4-5', '5+'];
         var colors = ['#3c0', '#9f6', '#fc3', '#f93', '#c60', '#c00']
         for (var i = 0; i < levels.length; i++) {
-            div.innerHTML += '<i style="background:' + colors[i] + '"></i>' + levels[i] + '<br>';
+            div.innerHTML += '<i style = "background:' + colors[i] + '"></i>' + levels[i] + '<br>';
         }
         return div;
     }
