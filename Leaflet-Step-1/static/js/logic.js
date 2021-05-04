@@ -1,53 +1,52 @@
-/* Set the map to center around the middle of the United States and attaching a zoom level that shows the start point */
 var myMap = L.map("map", {
-    center: [37.09, -95.71],
+    center: [34.05, -118.24],
     zoom: 4
 });
 
 /* Use the Leaflet street map as the background for analysis */
-var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     maxZoom: 12,
-    zoomOffset: 0,
+    zoomOffset: -1,
     id: "mapbox/streets-v11",
     accessToken: API_KEY
 }).addTo(myMap);
 
-var URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+var URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson"
 
 d3.json(URL).then(function(data) {
-    let earthquakes = data.features;
+    // let earthquakes = data.features;
     //    console.log(earthquakes);
     
-    let color = {
-        level1: "#3c0",
-        level2: "#9f6",
-        level3: "#fc3",
-        level4: "#f93",
-        level5: "#c60",
-        level6: "#c00"
+    var color = {
+        level1: "red",
+        level2: "orangered",
+        level3: "orange",
+        level4: "yellow",
+        level5: "green",
+        level6: "blue"
     }
-    for (var i = 0; i < earthquakes.length; i++) {
-        let latitude = earthquakes[i].geometry.coordinates[1];
-        let longitude = earthquakes[i].geometry.coordinates[0];
-        let magnitude = earthquakes[i].properties.mag;
+    for (var i = 0; i < data.features.length; i++) {
+        var lat = data.features[i].geometry.coordinates[1];
+        var long = data.features[i].geometry.coordinates[0];
+        var magnitude = data.features[i].properties.mag;
         var fillColor;
         if (magnitude > 5) {
-            fillColor = color.level6;
+            return fillColor = color.level6;
         } else if (magnitude > 4) {
-            fillColor = color.level5;
+            return fillColor = color.level5;
         } else if (magnitude > 3) {
-            fillColor = color.level4;
+            return fillColor = color.level4;
         } else if (magnitude > 2) {
-            fillColor = color.level3;
+             return fillColor = color.level3;
         } else if (magnitude > 1) {
-            fillColor = color.level2;
+            return fillColor = color.level2;
         } else {
-            fillColor = color.level1;
-        }
+            return fillColor = color.level1;
+        };
     }
-        var epicenter = L.circleMarker([latitude, longitude], {
-            radius: magnitude ** 2,
+        var epicenter = L.circleMarker([lat, long], {
+            radius: magnitude,
             color: "black",
             fillColor: fillColor,
             fillOpacity: 1,
@@ -55,8 +54,8 @@ d3.json(URL).then(function(data) {
         });
         epicenter.addTo(myMap);
 
-        epicenter.bindPopup("<h3> " + new Date(earthquakes[i].properties.time) + "</h3><h4>Magnitude: " + magnitude +
-            "<br>Location: " + earthquakes[i].properties.place + "</h4><br>");
+        epicenter.bindPopup("<h3> " + new Date(data.features[i].properties.time) + "</h3><h4>Magnitude: " + magnitude +
+            "<br>Location: " + data.features[i].properties.place + "</h4><br>");
 
     var legend = L.control( {
         position: 'bottomright'
@@ -65,13 +64,11 @@ d3.json(URL).then(function(data) {
     legend.onAdd = function (color) {
         var div = L.DomUtil.create('div', 'info legend');
         var levels = ['>1', '1-2', '2-3', '3-4', '4-5', '5+'];
-        var colors = ['#3c0', '#9f6', '#fc3', '#f93', '#c60', '#c00']
+        var colors = ['red', 'redorange', 'orange', 'yellow', 'green', 'blue']
         for (var i = 0; i < levels.length; i++) {
-            div.innerHTML += '<i style = "background:' + colors[i] + '"></i>' + levels[i] + '<br>';
+            div.HTML += '<i style = "background:' + colors[i] + '"></i>' + levels[i] + '<br>';
         }
         return div;
     }
     legend.addTo(myMap);
 })
-
-
