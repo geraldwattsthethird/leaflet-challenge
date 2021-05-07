@@ -15,16 +15,14 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson"
 
 d3.json(URL).then(function(data) {
-    // let earthquakes = data.features;
-    //    console.log(earthquakes);
     
     var color = {
-        level1: "red",
-        level2: "orangered",
-        level3: "orange",
-        level4: "yellow",
-        level5: "green",
-        level6: "blue"
+        level1: "#0000ff",
+        level2: "#008000",
+        level3: "#ffff00",
+        level4: "#ffa500",
+        level5: "#ff4500",
+        level6: "#cc0000"
     }
     for (var i = 0; i < data.features.length; i++) {
         var lat = data.features[i].geometry.coordinates[1];
@@ -47,7 +45,7 @@ d3.json(URL).then(function(data) {
     }
         var epicenter = L.circleMarker([lat, long], {
             radius: magnitude,
-            color: "black",
+            color: "#000000",
             fillColor: fillColor,
             fillOpacity: 1,
             weight: 1
@@ -64,7 +62,7 @@ d3.json(URL).then(function(data) {
     legend.onAdd = function (color) {
         var div = L.DomUtil.create('div', 'info legend');
         var levels = ['>1', '1-2', '2-3', '3-4', '4-5', '5+'];
-        var colors = ['red', 'redorange', 'orange', 'yellow', 'green', 'blue']
+        var colors = ['#cc0000', '#ff4500', '#ffa500', '#ffff00', '#008000', '#0000ff']
         for (var i = 0; i < levels.length; i++) {
             div.HTML += '<i style = "background:' + colors[i] + '"></i>' + levels[i] + '<br>';
         }
