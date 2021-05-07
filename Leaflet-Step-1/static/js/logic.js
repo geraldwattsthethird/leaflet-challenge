@@ -14,59 +14,52 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 
 var URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson"
 
-d3.json(URL).then(function(data) {
+d3.json(URL, function(data) {
     
-    var color = {
-        level1: "#0000ff",
-        level2: "#008000",
-        level3: "#ffff00",
-        level4: "#ffa500",
-        level5: "#ff4500",
-        level6: "#cc0000"
-    }
+    // function??
     for (var i = 0; i < data.features.length; i++) {
         var lat = data.features[i].geometry.coordinates[1];
         var long = data.features[i].geometry.coordinates[0];
         var magnitude = data.features[i].properties.mag;
         var fillColor;
         if (magnitude > 5) {
-            return fillColor = color.level6;
+            return fillColor = "red";
         } else if (magnitude > 4) {
-            return fillColor = color.level5;
+            return fillColor = "orangered";
         } else if (magnitude > 3) {
-            return fillColor = color.level4;
+            return fillColor = "orange";
         } else if (magnitude > 2) {
-             return fillColor = color.level3;
+             return fillColor = "yellow";
         } else if (magnitude > 1) {
-            return fillColor = color.level2;
+            return fillColor = "green";
         } else {
-            return fillColor = color.level1;
+            return fillColor = "blue";
         };
     }
         var epicenter = L.circleMarker([lat, long], {
             radius: magnitude,
-            color: "#000000",
+            color: "black",
             fillColor: fillColor,
             fillOpacity: 1,
             weight: 1
         });
         epicenter.addTo(myMap);
 
-        epicenter.bindPopup("<h3> " + new Date(data.features[i].properties.time) + "</h3><h4>Magnitude: " + magnitude +
-            "<br>Location: " + data.features[i].properties.place + "</h4><br>");
-
-    var legend = L.control( {
-        position: 'bottomright'
-    });
+        epicenter.bindPopup("<h3> " + new Date(data.features[i].properties.time) + "</h3><h4>0 " + magnitude +
+            "<br> " + data.features[i].properties.place + "</h4><br>");
     
+    //Add legend
     legend.onAdd = function (color) {
         var div = L.DomUtil.create('div', 'info legend');
         var levels = ['>1', '1-2', '2-3', '3-4', '4-5', '5+'];
-        var colors = ['#cc0000', '#ff4500', '#ffa500', '#ffff00', '#008000', '#0000ff']
+        var colors = ['blue', 'green', 'yellow', 'orange', 'orangered', 'red']
         for (var i = 0; i < levels.length; i++) {
             div.HTML += '<i style = "background:' + colors[i] + '"></i>' + levels[i] + '<br>';
         }
         return div;
     }
+    var legend = L.control( {
+        position: 'bottomright'
+    });
     legend.addTo(myMap);
 })
